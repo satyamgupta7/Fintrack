@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # FinTrack
 
 A personal finance dashboard built with React + Vite. Track savings, loans, expenses, and net worth with AI-powered insights.
@@ -70,3 +71,6 @@ npm run deploy
 
 - Data is per-user and per-browser — clearing browser storage resets data to the sample dataset
 - No backend or authentication server — suitable for personal/trusted use among 2–3 users
+=======
+# Fintrack
+>>>>>>> 10b6272e1f19741f4914de06b3a375409e1ed06c
