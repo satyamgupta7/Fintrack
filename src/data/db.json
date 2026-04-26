@@ -1,0 +1,33 @@
+{
+  "savings": [
+    { "id": 1, "type": "Goal", "name": "Emergency Fund", "amount": 30000, "goal": 60000, "date": "2025-01-01" },
+    { "id": 2, "type": "Goal", "name": "Vacation Fund", "amount": 8000, "goal": 25000, "date": "2025-03-01" },
+    { "id": 3, "type": "FD", "name": "Fixed Deposit", "amount": 50000, "goal": 50000, "interestRate": 7.0, "maturityDate": "2026-01-01", "date": "2025-01-01" },
+    { "id": 4, "type": "SIP", "name": "Equity Mutual Fund", "amount": 24000, "goal": 100000, "monthlyAmount": 2000, "startDate": "2024-01-01", "date": "2025-01-01" }
+  ],
+  "networth": [
+    { "id": 1, "category": "Assets", "name": "Savings Account", "value": 50000, "date": "2025-01-01" },
+    { "id": 2, "category": "Assets", "name": "Investments", "value": 80000, "date": "2025-01-01" },
+    { "id": 3, "category": "Liabilities", "name": "Personal Loan", "value": 40000, "date": "2025-01-01" }
+  ],
+  "loans": [
+    { "id": 1, "name": "Personal Loan", "principal": 100000, "remaining": 40000, "rate": 10.5, "emi": 3500, "dueDate": "2025-02-05", "loanType": "Personal" }
+  ],
+  "expenses": [
+    { "id": 1,  "year": 2024, "month": 1,  "paycheck": 60000, "emi": 3500, "invest": 5000, "rent": 10000, "insurance": 1500, "medicine": 500,  "personal": 3000, "credit": 5000, "family": 2000 },
+    { "id": 2,  "year": 2024, "month": 2,  "paycheck": 60000, "emi": 3500, "invest": 5000, "rent": 10000, "insurance": 1500, "medicine": 0,    "personal": 2500, "credit": 4500, "family": 0 },
+    { "id": 3,  "year": 2024, "month": 3,  "paycheck": 60000, "emi": 3500, "invest": 5000, "rent": 10000, "insurance": 1500, "medicine": 1000, "personal": 3500, "credit": 6000, "family": 3000 },
+    { "id": 4,  "year": 2024, "month": 4,  "paycheck": 62000, "emi": 3500, "invest": 5000, "rent": 10000, "insurance": 1500, "medicine": 500,  "personal": 3000, "credit": 5500, "family": 0 },
+    { "id": 5,  "year": 2024, "month": 5,  "paycheck": 62000, "emi": 3500, "invest": 5000, "rent": 10000, "insurance": 1500, "medicine": 0,    "personal": 2800, "credit": 4800, "family": 2500 },
+    { "id": 6,  "year": 2024, "month": 6,  "paycheck": 62000, "emi": 3500, "invest": 5000, "rent": 10000, "insurance": 1500, "medicine": 2000, "personal": 4000, "credit": 7000, "family": 0 },
+    { "id": 7,  "year": 2024, "month": 7,  "paycheck": 65000, "emi": 3500, "invest": 6000, "rent": 10000, "insurance": 1500, "medicine": 800,  "personal": 3200, "credit": 5200, "family": 4000 },
+    { "id": 8,  "year": 2024, "month": 8,  "paycheck": 65000, "emi": 3500, "invest": 6000, "rent": 10000, "insurance": 1500, "medicine": 0,    "personal": 3000, "credit": 4900, "family": 0 },
+    { "id": 9,  "year": 2024, "month": 9,  "paycheck": 65000, "emi": 3500, "invest": 6000, "rent": 10000, "insurance": 1500, "medicine": 1500, "personal": 3500, "credit": 5800, "family": 2000 },
+    { "id": 10, "year": 2024, "month": 10, "paycheck": 65000, "emi": 3500, "invest": 6000, "rent": 10000, "insurance": 1500, "medicine": 600,  "personal": 3100, "credit": 5100, "family": 0 },
+    { "id": 11, "year": 2024, "month": 11, "paycheck": 65000, "emi": 3500, "invest": 6000, "rent": 10000, "insurance": 1500, "medicine": 0,    "personal": 4500, "credit": 8000, "family": 5000 },
+    { "id": 12, "year": 2024, "month": 12, "paycheck": 68000, "emi": 3500, "invest": 6000, "rent": 10000, "insurance": 1500, "medicine": 2000, "personal": 5000, "credit": 7500, "family": 3000 },
+    { "id": 13, "year": 2025, "month": 1,  "paycheck": 70000, "emi": 3500, "invest": 7000, "rent": 12000, "insurance": 1500, "medicine": 1000, "personal": 4000, "credit": 6000, "family": 3000 },
+    { "id": 14, "year": 2025, "month": 2,  "paycheck": 70000, "emi": 3500, "invest": 7000, "rent": 12000, "insurance": 1500, "medicine": 0,    "personal": 3500, "credit": 5500, "family": 0 },
+    { "id": 15, "year": 2025, "month": 3,  "paycheck": 70000, "emi": 3500, "invest": 7000, "rent": 12000, "insurance": 1500, "medicine": 3000, "personal": 4500, "credit": 7000, "family": 6000 }
+  ]
+}
