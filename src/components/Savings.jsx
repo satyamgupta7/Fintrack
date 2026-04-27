@@ -322,7 +322,7 @@ export default function Savings() {
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                   <span style={{ fontSize: 14 }}>{st.emoji}</span>
-                  <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 7px", borderRadius: 99, background: st.badge, color: st.text }}>{s.type}</span>
+                  <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 7px", borderRadius: 99, background: st.badge, color: st.text }}>{isEmg ? "Emergency" : s.type}</span>
                 </div>
                 <div style={{ display: "flex", gap: 4 }}>
                   <button onClick={() => openEdit(s)} style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 5, padding: "3px 6px", cursor: "pointer", color: "#64748b", display: "flex" }}><Pencil size={10} /></button>

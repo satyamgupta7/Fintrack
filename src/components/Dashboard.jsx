@@ -97,7 +97,7 @@ export default function Dashboard() {
       </div>
 
       <div className="card section-gap" style={{ background: scoreBg, borderColor: scoreColor + "40", borderLeft: "4px solid " + scoreColor }}>
-        <div style={{ display: "grid", gridTemplateColumns: "120px 1fr", gap: 22 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "120px 1fr", gap: 22 }} className="health-inner">
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
             <div className="score-ring" style={{ borderColor: scoreColor, color: scoreColor, flexDirection: "column", gap: 0 }}>
               <span>{score.toFixed(1)}</span>
@@ -174,7 +174,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }} className="dash-charts">
         <div className="card">
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 14 }}>
             <div style={{ fontWeight: 700, color: "#94a3b8", fontSize: 11, textTransform: "uppercase", letterSpacing: 1 }}>Savings vs Goals</div>
