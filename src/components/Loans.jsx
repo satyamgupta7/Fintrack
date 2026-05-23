@@ -706,6 +706,7 @@ export default function Loans() {
                         whiteSpace: "nowrap",
                         fontWeight: 700,
                       }}
+                      yt
                     >
                       {h}
                     </th>
