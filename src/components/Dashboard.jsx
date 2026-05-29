@@ -4,6 +4,8 @@ import { useData } from "../App";
 import { fmt } from "../utils/format";
 import { Eye, EyeOff, PiggyBank, TrendingUp, Banknote, Landmark } from "lucide-react";
 
+import { auth } from "../firebase";
+
 export default function Dashboard() {
   const { data, updateData } = useData();
   const navigate = useNavigate();
@@ -12,8 +14,10 @@ export default function Dashboard() {
   const [savingInput, setSavingInput] = useState("");
 
   const userName = (() => {
-    try { return JSON.parse(sessionStorage.getItem("ft_user"))?.name?.split(" ")[0] || "User"; }
-    catch { return "User"; }
+    const raw = auth.currentUser?.displayName || auth.currentUser?.email?.split("@")[0] || "User";
+    // from email local part: "satyamgupta.tech07" → "satyamgupta" → "Satyamgupta"
+    const first = raw.split(".")[0];
+    return (first.charAt(0).toUpperCase() + first.slice(1).toLowerCase()).slice(0, 6);
   })();
 
   const inv = data.investments || { savingAccount: 200000, fixedDeposit: 0, mutualFund: 0, cash: 0 };
