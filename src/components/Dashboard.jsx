@@ -150,11 +150,11 @@ export default function Dashboard() {
               padding: "14px 16px",
               display: "flex",
               alignItems: "center",
-              gap: 8,
+              justifyContent: "center",
               border: "1px solid var(--border)",
               marginBottom: 24,
             }}>
-              <span style={{ fontSize: 20, color: "var(--gold)", fontWeight: 700 }}>₹</span>
+              <span style={{ fontSize: 22, color: "var(--text-primary)", fontWeight: 700, marginRight: 10 }}>₹</span>
               <input
                 type="number"
                 value={savingInput}
@@ -162,14 +162,16 @@ export default function Dashboard() {
                 placeholder="0"
                 autoFocus
                 style={{
-                  flex: 1,
                   background: "none",
                   border: "none",
                   outline: "none",
                   fontSize: 22,
                   fontWeight: 700,
                   color: "var(--text-primary)",
-                  textAlign: "center",
+                  textAlign: "left",
+                  width: "auto",
+                  minWidth: 80,
+                  maxWidth: 200,
                 }}
               />
             </div>
