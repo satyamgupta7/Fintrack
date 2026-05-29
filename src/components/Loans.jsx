@@ -41,13 +41,19 @@ export default function Loans() {
   }
   function handleSave() {
     if (!form.name || !form.principal) return;
-    const parsed = { ...form, principal: +form.principal, remaining: +form.remaining, rate: +form.rate, emi: +form.emi };
-    if (editId) {
-      updateData({ ...data, loans: data.loans.map(l => l.id === editId ? { ...l, ...parsed } : l) });
-    } else {
-      updateData({ ...data, loans: [...data.loans, { ...parsed, id: Date.now() }] });
-    }
+    const parsed = {
+      ...form,
+      principal: Number(form.principal),
+      remaining: Number(form.remaining),
+      rate: Number(form.rate),
+      emi: Number(form.emi),
+    };
+    const updatedLoans = editId
+      ? data.loans.map(l => l.id === editId ? { id: l.id, ...parsed } : l)
+      : [...data.loans, { ...parsed, id: Date.now() }];
+    updateData({ ...data, loans: updatedLoans });
     setShowModal(false);
+    setEditId(null);
   }
   function handleDelete(id) { updateData({ ...data, loans: data.loans.filter(l => l.id !== id) }); }
 

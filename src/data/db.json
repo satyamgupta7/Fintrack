@@ -1,4 +1,10 @@
 {
+  "investments": {
+    "savingAccount": 200000,
+    "fixedDeposit": 0,
+    "mutualFund": 0,
+    "cash": 0
+  },
   "savings": [
     {
       "id": 1,
@@ -23,11 +29,11 @@
     {
       "id": 1,
       "name": "Personal Loan",
-      "principal": 100000,
-      "remaining": 40000,
+      "principal": 450000,
+      "remaining": 450000,
       "rate": 10.5,
-      "emi": 3500,
-      "dueDate": "2026-02-05",
+      "emi": 30000,
+      "dueDate": "2026-06-05",
       "loanType": "Personal"
     }
   ],
