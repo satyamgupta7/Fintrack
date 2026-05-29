@@ -29,7 +29,7 @@ export default function Dashboard() {
     [data.loans]
   );
 
-  const netWorth = totalInvestments - totalLoanDue;
+  const netWorth = inv.savingAccount + totalInvestments - totalLoanDue;
 
   const latestExp = useMemo(
     () => [...data.expenses].sort((a, b) => b.year - a.year || b.month - a.month)[0],
