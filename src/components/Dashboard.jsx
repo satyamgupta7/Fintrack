@@ -1,13 +1,12 @@
 import React, { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useData } from "../App";
 import { fmt } from "../utils/format";
-import {
-  Eye, EyeOff, Building2, CreditCard, TrendingUp,
-  Wallet, Banknote, ChevronDown
-} from "lucide-react";
+import { Eye, EyeOff, Building2, TrendingUp, Banknote, Landmark } from "lucide-react";
 
 export default function Dashboard() {
   const { data } = useData();
+  const navigate = useNavigate();
   const [balanceVisible, setBalanceVisible] = useState(true);
 
   const userName = (() => {
@@ -25,18 +24,20 @@ export default function Dashboard() {
   );
   const estimatedBalance = totalSavings - totalLoanDue;
 
-  // Investment sub-totals (from savings data)
   const investTotal = useMemo(
-    () => data.savings.filter(s => s.type === "SIP" || s.type === "Investment")
-      .reduce((s, g) => s + Number(g.amount || 0), 0),
+    () => data.savings.reduce((s, g) => s + Number(g.amount || 0), 0),
     [data.savings]
   );
 
-  // Latest expense month
   const latestExp = useMemo(
     () => [...data.expenses].sort((a, b) => b.year - a.year || b.month - a.month)[0],
     [data.expenses]
   );
+
+  const totalExpenses = useMemo(() => {
+    const KEYS = ["emi","invest","rent","insurance","medicine","personal","credit","family"];
+    return latestExp ? KEYS.reduce((s, k) => s + Number(latestExp[k] || 0), 0) : 0;
+  }, [latestExp]);
 
   const widgets = [
     {
@@ -44,30 +45,28 @@ export default function Dashboard() {
       icon: <Building2 size={22} color="rgba(255,255,255,0.7)" />,
       value: fmt(latestExp?.paycheck || 0),
       bg: "#1A2FA5",
-    },
-    {
-      label: "Credit Cards",
-      icon: <CreditCard size={22} color="rgba(255,255,255,0.7)" />,
-      value: `- ${fmt(latestExp?.credit || 0)}`,
-      bg: "#8B1A1A",
+      route: "/expenses",
     },
     {
       label: "Investments",
       icon: <TrendingUp size={22} color="rgba(255,255,255,0.7)" />,
       value: fmt(investTotal),
       bg: "#1A5A2A",
+      route: "/investments",
     },
     {
-      label: "Wallets",
-      icon: <Wallet size={22} color="rgba(255,255,255,0.7)" />,
-      value: fmt(0),
-      bg: "#1A4A7A",
+      label: "Loans",
+      icon: <Landmark size={22} color="rgba(255,255,255,0.7)" />,
+      value: `- ${fmt(totalLoanDue)}`,
+      bg: "#8B1A1A",
+      route: "/loans",
     },
     {
-      label: "Cash",
+      label: "Expenses",
       icon: <Banknote size={22} color="rgba(255,255,255,0.7)" />,
-      value: fmt(0),
+      value: fmt(totalExpenses),
       bg: "#3A3A3A",
+      route: "/expenses",
     },
   ];
 
@@ -89,31 +88,20 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Widget grid — 2 columns */}
-      <div className="widget-grid">
-        {widgets.slice(0, 4).map(w => (
-          <div key={w.label} className="widget-card" style={{ background: w.bg }}>
+      {/* 2×2 widget grid — each card navigates to its section */}
+      <div className="widget-grid" style={{ marginBottom: 20 }}>
+        {widgets.map(w => (
+          <div
+            key={w.label}
+            className="widget-card"
+            style={{ background: w.bg, cursor: "pointer" }}
+            onClick={() => navigate(w.route)}
+          >
             <div className="widget-icon">{w.icon}</div>
             <div className="widget-amount">{balanceVisible ? w.value : "₹••••"}</div>
             <div className="widget-label">{w.label}</div>
           </div>
         ))}
-      </div>
-      {/* 5th widget — half width */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 20 }}>
-        <div className="widget-card" style={{ background: widgets[4].bg }}>
-          <div className="widget-icon">{widgets[4].icon}</div>
-          <div className="widget-amount">{balanceVisible ? widgets[4].value : "₹••••"}</div>
-          <div className="widget-label">{widgets[4].label}</div>
-        </div>
-        <div />
-      </div>
-
-      {/* Blog / quick info section */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "14px 0 8px", borderTop: "1px solid var(--border)" }}>
-        <span style={{ fontSize: 18, fontWeight: 700, color: "var(--text-primary)" }}>Blog</span>
-        <ChevronDown size={18} color="var(--text-secondary)" />
       </div>
     </div>
   );
