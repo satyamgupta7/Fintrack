@@ -11,7 +11,15 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const [balanceVisible, setBalanceVisible] = useState(true);
   const [showSavingModal, setShowSavingModal] = useState(false);
-  const [savingInput, setSavingInput] = useState("");
+  const [savingInput, setSavingInput] = useState("");      // raw digits only
+  const [savingDisplay, setSavingDisplay] = useState(""); // formatted with commas
+
+  function handleSavingChange(e) {
+    // strip everything except digits
+    const digits = e.target.value.replace(/[^0-9]/g, "");
+    setSavingInput(digits);
+    setSavingDisplay(digits ? Number(digits).toLocaleString("en-IN") : "");
+  }
 
   const userName = (() => {
     const raw = auth.currentUser?.displayName || auth.currentUser?.email?.split("@")[0] || "User";
@@ -42,7 +50,9 @@ export default function Dashboard() {
   }, [latestExp]);
 
   function openSavingModal() {
-    setSavingInput(String(inv.savingAccount));
+    const raw = String(inv.savingAccount || 0);
+    setSavingInput(raw);
+    setSavingDisplay(Number(raw).toLocaleString("en-IN"));
     setShowSavingModal(true);
   }
   function saveSavingAccount() {
@@ -156,9 +166,10 @@ export default function Dashboard() {
             }}>
               <span style={{ fontSize: 22, color: "var(--text-primary)", fontWeight: 700, marginRight: 10 }}>₹</span>
               <input
-                type="number"
-                value={savingInput}
-                onChange={e => setSavingInput(e.target.value)}
+                type="text"
+                inputMode="numeric"
+                value={savingDisplay}
+                onChange={handleSavingChange}
                 placeholder="0"
                 autoFocus
                 style={{
