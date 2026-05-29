@@ -113,23 +113,86 @@ export default function Dashboard() {
 
       {/* Saving Account edit modal */}
       {showSavingModal && (
-        <div className="modal-overlay" onClick={() => setShowSavingModal(false)}>
-          <div className="modal" onClick={e => e.stopPropagation()}>
-            <div className="modal-handle" />
-            <div className="modal-title">Edit Saving Account</div>
-            <div className="form-group">
-              <label>Current Balance (₹)</label>
+        <div className="modal-overlay"
+          style={{ alignItems: "center" }}
+          onClick={() => setShowSavingModal(false)}>
+          <div onClick={e => e.stopPropagation()}
+            style={{
+              background: "var(--bg-card)",
+              borderRadius: 20,
+              padding: "32px 24px 28px",
+              width: "88%",
+              maxWidth: 360,
+              border: "1px solid var(--border)",
+              textAlign: "center",
+            }}>
+            {/* Icon */}
+            <div style={{
+              width: 56, height: 56, borderRadius: "50%",
+              background: "rgba(201,162,39,0.15)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              margin: "0 auto 16px",
+            }}>
+              <PiggyBank size={26} color="var(--gold)" />
+            </div>
+
+            <div style={{ fontSize: 18, fontWeight: 700, color: "var(--text-primary)", marginBottom: 4 }}>
+              Saving Account
+            </div>
+            <div style={{ fontSize: 13, color: "var(--text-secondary)", marginBottom: 24 }}>
+              Update your current balance
+            </div>
+
+            {/* Amount input */}
+            <div style={{
+              background: "var(--bg-muted)",
+              borderRadius: 14,
+              padding: "14px 16px",
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+              border: "1px solid var(--border)",
+              marginBottom: 24,
+            }}>
+              <span style={{ fontSize: 20, color: "var(--gold)", fontWeight: 700 }}>₹</span>
               <input
                 type="number"
                 value={savingInput}
                 onChange={e => setSavingInput(e.target.value)}
-                placeholder="200000"
+                placeholder="0"
                 autoFocus
+                style={{
+                  flex: 1,
+                  background: "none",
+                  border: "none",
+                  outline: "none",
+                  fontSize: 22,
+                  fontWeight: 700,
+                  color: "var(--text-primary)",
+                  textAlign: "center",
+                }}
               />
             </div>
-            <div style={{ display: "flex", gap: 10, marginTop: 8 }}>
-              <button className="btn btn-outline-dark" style={{ flex: 1 }} onClick={() => setShowSavingModal(false)}>Cancel</button>
-              <button className="btn btn-gold" style={{ flex: 1 }} onClick={saveSavingAccount}>Save</button>
+
+            <div style={{ display: "flex", gap: 10 }}>
+              <button
+                onClick={() => setShowSavingModal(false)}
+                style={{
+                  flex: 1, padding: "12px", borderRadius: 12,
+                  background: "var(--bg-muted)", border: "1px solid var(--border)",
+                  color: "var(--text-secondary)", fontSize: 14, fontWeight: 600, cursor: "pointer",
+                }}>
+                Cancel
+              </button>
+              <button
+                onClick={saveSavingAccount}
+                style={{
+                  flex: 1, padding: "12px", borderRadius: 12,
+                  background: "var(--gold)", border: "none",
+                  color: "#000", fontSize: 14, fontWeight: 700, cursor: "pointer",
+                }}>
+                Save
+              </button>
             </div>
           </div>
         </div>
