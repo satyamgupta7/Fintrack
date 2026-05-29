@@ -35,11 +35,15 @@ export default function AppModal({
         style={{
           background: "var(--bg-card)",
           borderRadius: 20,
-          padding: "32px 24px 28px",
+          padding: "28px 24px 24px",
           width: "100%",
           maxWidth: 360,
+          maxHeight: "90vh",
+          overflowY: "auto",
           border: "1px solid var(--border)",
           textAlign: "center",
+          display: "flex",
+          flexDirection: "column",
         }}
       >
         {/* Icon */}
@@ -69,8 +73,8 @@ export default function AppModal({
           {children}
         </div>
 
-        {/* Buttons */}
-        <div style={{ display: "flex", gap: 10, marginTop: 20 }}>
+        {/* Buttons — sticky at bottom */}
+        <div style={{ display: "flex", gap: 10, marginTop: 20, flexShrink: 0 }}>
           <button onClick={onClose} style={{
             flex: 1, padding: "12px", borderRadius: 12,
             background: "var(--bg-muted)", border: "1px solid var(--border)",
