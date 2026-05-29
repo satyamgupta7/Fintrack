@@ -620,15 +620,15 @@ body {
 /* ── Toggle switch ────────────────────────────────────────────────── */
 .toggle {
   position: relative;
-  width: 48px;
-  height: 26px;
+  width: 54px;
+  height: 30px;
   flex-shrink: 0;
 }
 .toggle input { opacity: 0; width: 0; height: 0; }
 .toggle-slider {
   position: absolute;
   inset: 0;
-  background: var(--bg-muted);
+  background: #333;
   border-radius: 99px;
   cursor: pointer;
   transition: background 0.2s;
@@ -636,14 +636,14 @@ body {
 .toggle-slider::before {
   content: '';
   position: absolute;
-  width: 20px; height: 20px;
-  left: 3px; top: 3px;
+  width: 22px; height: 22px;
+  left: 4px; top: 4px;
   background: #fff;
   border-radius: 50%;
   transition: transform 0.2s;
 }
 .toggle input:checked + .toggle-slider { background: var(--gold); }
-.toggle input:checked + .toggle-slider::before { transform: translateX(22px); }
+.toggle input:checked + .toggle-slider::before { transform: translateX(24px); }
 
 /* ── Manage widgets page ──────────────────────────────────────────── */
 .widget-manage-item {
