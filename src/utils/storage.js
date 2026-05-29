@@ -1,40 +1,39 @@
-import initialData from '../data/db.json'
+import { db } from "../firebase";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import initialData from "../data/db.json";
 
-const key = (email) => `fintrack_data_${email || 'guest'}`
-const versionKey = (email) => `fintrack_ver_${email || 'guest'}`
+const DEFAULT_INVESTMENTS = { savingAccount: 200000, fixedDeposit: 0, mutualFund: 0, cash: 0 };
 
-const DEFAULT_INVESTMENTS = { savingAccount: 200000, fixedDeposit: 0, mutualFund: 0, cash: 0 }
-const DATA_VERSION = 3
-
-export function loadData(email) {
+// ── Firestore helpers ──────────────────────────────────────────────────────
+export async function loadData(uid) {
+  if (!uid) return structuredClone(initialData);
   try {
-    const storedVer = Number(localStorage.getItem(versionKey(email)) || 0)
-    const stored = localStorage.getItem(key(email))
-
-    // First time or version mismatch → load fresh defaults, mark version
-    if (!stored || storedVer < DATA_VERSION) {
-      const fresh = structuredClone(initialData)
-      if (!fresh.investments) fresh.investments = { ...DEFAULT_INVESTMENTS }
-      localStorage.setItem(key(email), JSON.stringify(fresh))
-      localStorage.setItem(versionKey(email), String(DATA_VERSION))
-      return fresh
+    const ref = doc(db, "users", uid);
+    const snap = await getDoc(ref);
+    if (snap.exists()) {
+      const d = snap.data();
+      if (!d.investments) d.investments = { ...DEFAULT_INVESTMENTS };
+      return d;
     }
-
-    const parsed = JSON.parse(stored)
-    if (!parsed.investments) parsed.investments = { ...DEFAULT_INVESTMENTS }
-    return parsed
-  } catch {
-    return structuredClone(initialData)
+    // First login — seed with defaults
+    const fresh = structuredClone(initialData);
+    if (!fresh.investments) fresh.investments = { ...DEFAULT_INVESTMENTS };
+    await setDoc(ref, fresh);
+    return fresh;
+  } catch (e) {
+    console.error("loadData error", e);
+    return structuredClone(initialData);
   }
 }
 
-export function saveData(data, email) {
-  // save data as-is, version is tracked separately
-  localStorage.setItem(key(email), JSON.stringify(data))
-  localStorage.setItem(versionKey(email), String(DATA_VERSION))
+export async function saveData(data, uid) {
+  if (!uid) return;
+  try {
+    const ref = doc(db, "users", uid);
+    await setDoc(ref, data);
+  } catch (e) {
+    console.error("saveData error", e);
+  }
 }
 
-export function clearData(email) {
-  localStorage.removeItem(key(email))
-  localStorage.removeItem(versionKey(email))
-}
+export function clearData() {}

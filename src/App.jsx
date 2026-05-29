@@ -1,5 +1,7 @@
-﻿import React, { useState, createContext, useContext } from "react";
+﻿import React, { useState, useEffect, createContext, useContext } from "react";
 import { Routes, Route, Navigate, NavLink, useLocation, useNavigate } from "react-router-dom";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { auth } from "./firebase";
 import {
   LayoutDashboard, TrendingUp, CreditCard, Receipt,
   User, ChevronLeft, Tag, LayoutGrid,
@@ -16,11 +18,6 @@ import { loadData, saveData } from "./utils/storage";
 
 export const DataContext = createContext(null);
 export function useData() { return useContext(DataContext); }
-
-function getStoredUser() {
-  try { return JSON.parse(sessionStorage.getItem("ft_user")); }
-  catch { return null; }
-}
 
 const PAGE_TITLES = {
   "/": "Dashboard",
@@ -56,9 +53,7 @@ function ManageWidgets({ onBack }) {
       <div className="profile-menu-card">
         {items.map(item => (
           <div key={item.key} className="widget-manage-item">
-            <span className="widget-manage-icon" style={{ marginLeft: item.indent ? 20 : 0 }}>
-              {item.icon}
-            </span>
+            <span className="widget-manage-icon" style={{ marginLeft: item.indent ? 20 : 0 }}>{item.icon}</span>
             <span className="widget-manage-label">{item.label}</span>
             <label className="toggle">
               <input type="checkbox" checked={widgets[item.key]}
@@ -76,8 +71,7 @@ function ProfilePage({ user, onLogout }) {
   const navigate = useNavigate();
   const [subPage, setSubPage] = useState(null);
   const initials = user && user.name
-    ? user.name.split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2)
-    : "U";
+    ? user.name.split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2) : "U";
 
   if (subPage === "widgets") return <ManageWidgets onBack={() => setSubPage(null)} />;
 
@@ -113,13 +107,10 @@ function ProfilePage({ user, onLogout }) {
         <span className="profile-header-title">Profile</span>
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 24,
-        background: "var(--bg-card)", borderRadius: 14, padding: "16px",
-        border: "1px solid var(--border)" }}>
+        background: "var(--bg-card)", borderRadius: 14, padding: "16px", border: "1px solid var(--border)" }}>
         <div style={{ width: 52, height: 52, borderRadius: "50%", background: "var(--gold)",
           display: "flex", alignItems: "center", justifyContent: "center",
-          fontWeight: 800, fontSize: 18, color: "#000", flexShrink: 0 }}>
-          {initials}
-        </div>
+          fontWeight: 800, fontSize: 18, color: "#000", flexShrink: 0 }}>{initials}</div>
         <div>
           <div style={{ fontSize: 16, fontWeight: 700, color: "var(--text-primary)" }}>{user ? user.name : "User"}</div>
           <div style={{ fontSize: 13, color: "var(--text-secondary)", marginTop: 2 }}>{user ? user.email : ""}</div>
@@ -150,8 +141,7 @@ function ProfilePage({ user, onLogout }) {
 function Topbar({ user, pageTitle }) {
   const navigate = useNavigate();
   const initials = user && user.name
-    ? user.name.split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2)
-    : "U";
+    ? user.name.split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2) : "U";
   return (
     <header className="topbar">
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -168,26 +158,56 @@ function Topbar({ user, pageTitle }) {
 }
 
 export default function App() {
-  const [user, setUser] = useState(getStoredUser);
-  const [data, setData] = useState(() => loadData(getStoredUser() ? getStoredUser().email : null));
+  const [user, setUser] = useState(null);
+  const [data, setData] = useState(null);
+  const [authReady, setAuthReady] = useState(false);
   const loc = useLocation();
   const pageTitle = PAGE_TITLES[loc.pathname] || "FinTrack";
 
-  function updateData(newData) {
+  // Listen to Firebase auth state
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        const u = { uid: firebaseUser.uid, name: firebaseUser.displayName || firebaseUser.email.split("@")[0], email: firebaseUser.email };
+        setUser(u);
+        const d = await loadData(firebaseUser.uid);
+        setData(d);
+      } else {
+        setUser(null);
+        setData(null);
+      }
+      setAuthReady(true);
+    });
+    return unsub;
+  }, []);
+
+  async function updateData(newData) {
     setData(newData);
-    saveData(newData, user ? user.email : null);
-  }
-  function handleLogin(u) {
-    sessionStorage.setItem("ft_user", JSON.stringify(u));
-    setUser(u);
-    setData(loadData(u.email));
-  }
-  function handleLogout() {
-    sessionStorage.removeItem("ft_user");
-    setUser(null);
+    if (user) await saveData(newData, user.uid);
   }
 
-  if (!user) return <Auth onLogin={handleLogin} />;
+  async function handleLogin(u) {
+    setUser(u);
+    const d = await loadData(u.uid);
+    setData(d);
+  }
+
+  async function handleLogout() {
+    await signOut(auth);
+    setUser(null);
+    setData(null);
+  }
+
+  if (!authReady) {
+    return (
+      <div style={{ minHeight: "100vh", background: "var(--bg-page)", display: "flex",
+        alignItems: "center", justifyContent: "center", color: "var(--gold)", fontSize: 18, fontWeight: 700 }}>
+        Loading...
+      </div>
+    );
+  }
+
+  if (!user || !data) return <Auth onLogin={handleLogin} />;
 
   const isProfile = loc.pathname === "/profile";
 
