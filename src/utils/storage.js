@@ -4,7 +4,7 @@ const key = (email) => `fintrack_data_${email || 'guest'}`
 const versionKey = (email) => `fintrack_ver_${email || 'guest'}`
 
 const DEFAULT_INVESTMENTS = { savingAccount: 200000, fixedDeposit: 0, mutualFund: 0, cash: 0 }
-const DATA_VERSION = 2
+const DATA_VERSION = 3
 
 export function loadData(email) {
   try {

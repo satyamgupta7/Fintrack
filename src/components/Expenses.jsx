@@ -28,7 +28,10 @@ export default function Expenses() {
   const [editId, setEditId] = useState(null);
 
   const years = [...new Set(data.expenses.map(e => e.year))].sort();
-  const [selectedYear, setSelectedYear] = useState(years[years.length - 1] || 2026);
+  const [selectedYear, setSelectedYear] = useState(() => {
+    const all = [...new Set(data.expenses.map(e => e.year))].sort();
+    return all[all.length - 1] || 2026;
+  });
 
   const monthsData = useMemo(
     () => data.expenses.filter(e => e.year === selectedYear).sort((a, b) => a.month - b.month),
