@@ -1,71 +1,37 @@
-import React, { useState } from 'react'
-
-const FEATURES = [
-  'Real-time financial health score',
-  'Smart loan prepayment simulator',
-  'AI-powered spending insights',
-  'SIP & investment tracker',
-]
+import React, { useState } from 'react';
 
 export default function Auth({ onLogin }) {
-  const [mode, setMode] = useState('login')
-  const [form, setForm] = useState({ name: '', email: '', password: '', confirm: '' })
-  const [error, setError] = useState('')
+  const [mode, setMode] = useState('login');
+  const [form, setForm] = useState({ name: '', email: '', password: '', confirm: '' });
+  const [error, setError] = useState('');
 
-  function set(field) {
-    return (e) => setForm((f) => ({ ...f, [field]: e.target.value }))
-  }
+  function set(field) { return e => setForm(f => ({ ...f, [field]: e.target.value })); }
 
   function handleSubmit(e) {
-    e.preventDefault()
-    setError('')
+    e.preventDefault();
+    setError('');
     if (mode === 'login') {
-      if (!form.email || !form.password) return setError('Please enter your email and password.')
-      onLogin({ name: form.email.split('@')[0], email: form.email.toLowerCase() })
+      if (!form.email || !form.password) return setError('Please enter your email and password.');
+      onLogin({ name: form.email.split('@')[0], email: form.email.toLowerCase() });
     } else {
-      if (!form.name || !form.email || !form.password) return setError('Please fill in all fields.')
-      if (form.password !== form.confirm) return setError('Passwords do not match.')
-      onLogin({ name: form.name.trim(), email: form.email.toLowerCase() })
+      if (!form.name || !form.email || !form.password) return setError('Please fill in all fields.');
+      if (form.password !== form.confirm) return setError('Passwords do not match.');
+      onLogin({ name: form.name.trim(), email: form.email.toLowerCase() });
     }
   }
 
-  function switchMode(next) {
-    setMode(next)
-    setError('')
-    setForm({ name: '', email: '', password: '', confirm: '' })
-  }
+  function switchMode(next) { setMode(next); setError(''); setForm({ name: '', email: '', password: '', confirm: '' }); }
 
   return (
     <div className="auth-page">
-      <div className="auth-left">
+      <div className="auth-card">
         <div className="auth-logo">
           <div className="auth-logo-icon">FT</div>
           <div className="auth-logo-text">FinTrack</div>
         </div>
-        <div className="auth-tagline">Your personal finance<br />command center</div>
-        <div className="auth-sub">
-          Track savings, loans, expenses and net worth — all in one place with AI-powered insights.
-        </div>
-        <div className="auth-features">
-          {FEATURES.map((f) => (
-            <div key={f} className="auth-feature">
-              <div className="auth-feature-dot" />{f}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="auth-right">
-        <div className="auth-form-logo">
-          <div className="auth-form-logo-icon">FT</div>
-          <div className="auth-form-logo-text">Fin<span>Track</span></div>
-        </div>
         <div className="auth-title">{mode === 'login' ? 'Welcome back' : 'Create account'}</div>
         <div className="auth-subtitle">
           {mode === 'login' ? 'Sign in to your FinTrack dashboard' : 'Start managing your finances today'}
-        </div>
-        <div className="auth-sub" style={{ fontSize: 11, color: '#94a3b8', marginBottom: 12 }}>
-          ℹ️ Data is stored locally in your browser — each email gets its own private workspace.
         </div>
 
         {error && <div className="auth-error">{error}</div>}
@@ -99,11 +65,7 @@ export default function Auth({ onLogin }) {
         {mode === 'login' && (
           <>
             <div className="auth-divider">or try demo</div>
-            <button
-              className="btn btn-outline"
-              style={{ width: '100%', justifyContent: 'center', padding: 12, fontSize: 14 }}
-              onClick={() => onLogin({ name: 'Demo User', email: 'demo@fintrack.app' })}
-            >
+            <button className="auth-demo-btn" onClick={() => onLogin({ name: 'Axion', email: 'demo@fintrack.app' })}>
               Continue with Demo Account
             </button>
           </>
@@ -118,5 +80,5 @@ export default function Auth({ onLogin }) {
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -1,186 +1,252 @@
-import React, { useState, createContext, useContext } from "react";
+﻿import React, { useState, createContext, useContext } from "react";
+import { Routes, Route, Navigate, NavLink, useLocation, useNavigate } from "react-router-dom";
 import {
-  Routes,
-  Route,
-  Navigate,
-  NavLink,
-  useLocation,
-} from "react-router-dom";
-import {
-  LayoutDashboard,
-  PiggyBank,
-  CreditCard,
-  Receipt,
-  MoreHorizontal,
-  LogOut,
-  BarChart3,
+  LayoutDashboard, TrendingUp, CreditCard, Receipt,
+  User, ChevronLeft, Tag, LayoutGrid,
+  Wallet, Bell, Palette, Download, Shield, Trash2,
+  MessageSquare, LogOut, ChevronRight,
+  Building2, PiggyBank, BarChart3, Lock
 } from "lucide-react";
-import Sidebar from "./components/Sidebar";
 import Dashboard from "./components/Dashboard";
-import Savings from "./components/Savings";
+import Investments from "./components/Investments";
 import Loans from "./components/Loans";
 import Expenses from "./components/Expenses";
-import Analytics from "./components/Analytics";
 import Auth from "./components/Auth";
 import { loadData, saveData } from "./utils/storage";
 
 export const DataContext = createContext(null);
-export function useData() {
-  return useContext(DataContext);
-}
+export function useData() { return useContext(DataContext); }
 
 function getStoredUser() {
-  try {
-    return JSON.parse(sessionStorage.getItem("ft_user"));
-  } catch {
-    return null;
-  }
+  try { return JSON.parse(sessionStorage.getItem("ft_user")); }
+  catch { return null; }
 }
 
 const PAGE_TITLES = {
   "/": "Dashboard",
-  "/savings": "Savings",
+  "/investments": "Investments",
   "/loans": "Loans",
   "/expenses": "Expenses",
-  "/analytics": "Planning & Insights",
+  "/profile": "Profile",
 };
 
-function AppHeader({ user, onLogout }) {
-  const loc = useLocation();
-  const firstName = user?.name ? user.name.split(" ")[0] : "User";
-  const initials = user?.name
-    ? user.name
-        .split(" ")
-        .map((w) => w[0])
-        .join("")
-        .toUpperCase()
-        .slice(0, 2)
+function ManageWidgets({ onBack }) {
+  const [widgets, setWidgets] = useState({
+    bankAccounts: true, creditCards: true, investments: true,
+    fixedDeposit: true, mutualFunds: true, holdings: true,
+    epf: true, wallets: true, cash: true,
+  });
+  const items = [
+    { key: "bankAccounts", label: "Bank Accounts", icon: <Building2 size={16} />, indent: false },
+    { key: "creditCards",  label: "Credit Cards",  icon: <CreditCard size={16} />, indent: false },
+    { key: "investments",  label: "Investments",   icon: <BarChart3 size={16} />, indent: false },
+    { key: "fixedDeposit", label: "Fixed Deposit", icon: <PiggyBank size={16} />, indent: true },
+    { key: "mutualFunds",  label: "Mutual funds",  icon: <BarChart3 size={16} />, indent: true },
+    { key: "holdings",     label: "Holdings",      icon: <BarChart3 size={16} />, indent: true },
+    { key: "epf",          label: "EPF",           icon: <Lock size={16} />, indent: true },
+    { key: "wallets",      label: "Wallets",       icon: <Wallet size={16} />, indent: false },
+    { key: "cash",         label: "Cash",          icon: <Receipt size={16} />, indent: false },
+  ];
+  return (
+    <div style={{ padding: "0 16px 90px" }}>
+      <div className="profile-header">
+        <button className="profile-back" onClick={onBack}><ChevronLeft size={24} /></button>
+        <span className="profile-header-title">Manage Dashboard Widgets</span>
+      </div>
+      <div className="profile-menu-card">
+        {items.map(item => (
+          <div key={item.key} className="widget-manage-item">
+            <span className="widget-manage-icon" style={{ marginLeft: item.indent ? 20 : 0 }}>
+              {item.icon}
+            </span>
+            <span className="widget-manage-label">{item.label}</span>
+            <label className="toggle">
+              <input type="checkbox" checked={widgets[item.key]}
+                onChange={() => setWidgets(p => ({ ...p, [item.key]: !p[item.key] }))} />
+              <span className="toggle-slider" />
+            </label>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ProfilePage({ user, onLogout }) {
+  const navigate = useNavigate();
+  const [subPage, setSubPage] = useState(null);
+  const initials = user && user.name
+    ? user.name.split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2)
     : "U";
-  const pageTitle = PAGE_TITLES[loc.pathname] || "FinTrack";
-  const hour = new Date().getHours();
-  const greeting =
-    hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+
+  if (subPage === "widgets") return <ManageWidgets onBack={() => setSubPage(null)} />;
+
+  const menuGroups = [
+    {
+      label: "General",
+      items: [
+        { icon: <User size={16} />, label: "Account Details", dot: true, action: () => {} },
+        { icon: <Tag size={16} />, label: "Manage Transaction Tags", action: () => {} },
+        { icon: <LayoutGrid size={16} />, label: "Manage Dashboard Widgets", action: () => setSubPage("widgets") },
+        { icon: <Wallet size={16} />, label: "Manage Budget", action: () => {} },
+        { icon: <MessageSquare size={16} />, label: "Report Messages", action: () => {} },
+        { icon: <CreditCard size={16} />, label: "Bills & Subscriptions", action: () => {} },
+        { icon: <Bell size={16} />, label: "Manage Notifications", action: () => {} },
+        { icon: <Palette size={16} />, label: "Theme", action: () => {} },
+        { icon: <Download size={16} />, label: "Export Settings", action: () => {} },
+        { icon: <Shield size={16} />, label: "Privacy", action: () => {} },
+        { icon: <Trash2 size={16} />, label: "Trash", action: () => {} },
+      ],
+    },
+    {
+      label: "Contact",
+      items: [
+        { icon: <MessageSquare size={16} />, label: "Submit feedback", action: () => {} },
+      ],
+    },
+  ];
 
   return (
-    <header className="app-header">
-      <div className="app-header-greeting">
-        {greeting}, <strong>{firstName}</strong> 👋
+    <div className="profile-page">
+      <div className="profile-header">
+        <button className="profile-back" onClick={() => navigate(-1)}><ChevronLeft size={24} /></button>
+        <span className="profile-header-title">Profile</span>
       </div>
-      <div className="app-header-right">
-        <div className="app-header-avatar" title={user?.name}>
+      <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 24,
+        background: "var(--bg-card)", borderRadius: 14, padding: "16px",
+        border: "1px solid var(--border)" }}>
+        <div style={{ width: 52, height: 52, borderRadius: "50%", background: "var(--gold)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          fontWeight: 800, fontSize: 18, color: "#000", flexShrink: 0 }}>
           {initials}
         </div>
-        <div className="app-header-userinfo">
-          <div className="app-header-name">{user?.name || "User"}</div>
+        <div>
+          <div style={{ fontSize: 16, fontWeight: 700, color: "var(--text-primary)" }}>{user ? user.name : "User"}</div>
+          <div style={{ fontSize: 13, color: "var(--text-secondary)", marginTop: 2 }}>{user ? user.email : ""}</div>
         </div>
-        <button
-          className="app-header-logout"
-          onClick={onLogout}
-          title="Sign out"
-        >
-          <LogOut size={15} />
+        <button className="btn-icon" style={{ marginLeft: "auto" }} onClick={onLogout} title="Sign out">
+          <LogOut size={16} />
         </button>
       </div>
+      {menuGroups.map(group => (
+        <div key={group.label}>
+          <div className="profile-section-label">{group.label}</div>
+          <div className="profile-menu-card">
+            {group.items.map(item => (
+              <div key={item.label} className="profile-menu-item" onClick={item.action}>
+                <div className="profile-menu-icon">{item.icon}</div>
+                <span className="profile-menu-text">{item.label}</span>
+                {item.dot && <div className="profile-dot" />}
+                <ChevronRight size={16} color="var(--text-muted)" />
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function Topbar({ user, pageTitle }) {
+  const navigate = useNavigate();
+  const initials = user && user.name
+    ? user.name.split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2)
+    : "U";
+  return (
+    <header className="topbar">
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <div style={{ width: 28, height: 28, background: "var(--gold)", borderRadius: 8,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          fontWeight: 900, fontSize: 11, color: "#000" }}>FT</div>
+      </div>
+      <span className="topbar-title">{pageTitle}</span>
+      <button className="topbar-profile-btn" onClick={() => navigate("/profile")} title="Profile">
+        {initials}
+      </button>
     </header>
   );
 }
 
 export default function App() {
   const [user, setUser] = useState(getStoredUser);
-  const [data, setData] = useState(() => loadData(getStoredUser()?.email));
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [data, setData] = useState(() => loadData(getStoredUser() ? getStoredUser().email : null));
   const loc = useLocation();
   const pageTitle = PAGE_TITLES[loc.pathname] || "FinTrack";
 
   function updateData(newData) {
     setData(newData);
-    saveData(newData, user?.email);
+    saveData(newData, user ? user.email : null);
   }
-
   function handleLogin(u) {
     sessionStorage.setItem("ft_user", JSON.stringify(u));
     setUser(u);
     setData(loadData(u.email));
   }
-
   function handleLogout() {
     sessionStorage.removeItem("ft_user");
     setUser(null);
   }
 
-  const initials = user?.name
-    ? user.name
-        .split(" ")
-        .map((w) => w[0])
-        .join("")
-        .toUpperCase()
-        .slice(0, 2)
-    : "U";
-
   if (!user) return <Auth onLogin={handleLogin} />;
+
+  const isProfile = loc.pathname === "/profile";
 
   return (
     <DataContext.Provider value={{ data, updateData }}>
-      <div className="app-layout">
-        <Sidebar
-          user={user}
-          onLogout={handleLogout}
-          isOpen={sidebarOpen}
-          onClose={() => setSidebarOpen(false)}
-        />
-        <main className="main-content">
-          {/* Mobile topbar */}
-          <header className="mobile-topbar">
-            <div className="mobile-topbar-left">
-              <div
-                className="sidebar-logo-icon"
-                style={{ width: 30, height: 30, fontSize: 13 }}
-              >
-                FT
-              </div>
-              <span className="sidebar-logo-text" style={{ fontSize: 16 }}>
-                Fin<span>Track</span>
-              </span>
-            </div>
-            <div className="mobile-topbar-title">{pageTitle}</div>
-            <div className="mobile-topbar-avatar" title={user?.name}>
-              {initials}
-            </div>
-          </header>
-          <div className="page-content">
-            {/* Desktop header */}
-            <AppHeader user={user} onLogout={handleLogout} />
+      <div className="app-shell">
+        <nav className="desktop-sidebar">
+          <div className="desktop-sidebar-logo">
+            <div className="desktop-sidebar-logo-icon">FT</div>
+            <span className="desktop-sidebar-logo-text">FinTrack</span>
+          </div>
+          {[
+            { to: "/", icon: <LayoutDashboard size={18} />, label: "Dashboard" },
+            { to: "/investments", icon: <TrendingUp size={18} />, label: "Investments" },
+            { to: "/loans", icon: <CreditCard size={18} />, label: "Loans" },
+            { to: "/expenses", icon: <Receipt size={18} />, label: "Expenses" },
+          ].map(({ to, icon, label }) => (
+            <NavLink key={to} to={to} end={to === "/"}
+              className={({ isActive }) => "desktop-nav-item" + (isActive ? " active" : "")}>
+              {icon} {label}
+            </NavLink>
+          ))}
+          <div style={{ marginTop: "auto", borderTop: "1px solid var(--border)", paddingTop: 12 }}>
+            <NavLink to="/profile"
+              className={({ isActive }) => "desktop-nav-item" + (isActive ? " active" : "")}>
+              <User size={18} /> Profile
+            </NavLink>
+          </div>
+        </nav>
+
+        <div className="desktop-main">
+          {!isProfile && <Topbar user={user} pageTitle={pageTitle} />}
+          <div className={isProfile ? "" : "page-content"}>
             <Routes>
               <Route path="/" element={<Dashboard />} />
-              <Route path="/savings" element={<Savings />} />
+              <Route path="/investments" element={<Investments />} />
               <Route path="/loans" element={<Loans />} />
               <Route path="/expenses" element={<Expenses />} />
-              <Route path="/analytics" element={<Analytics />} />
+              <Route path="/profile" element={<ProfilePage user={user} onLogout={handleLogout} />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </div>
-        </main>
+        </div>
+
+        <nav className="bottom-nav">
+          {[
+            { to: "/", icon: LayoutDashboard, label: "Dashboard" },
+            { to: "/investments", icon: TrendingUp, label: "Investment" },
+            { to: "/loans", icon: CreditCard, label: "Loan" },
+            { to: "/expenses", icon: Receipt, label: "Expense" },
+          ].map(({ to, icon: Icon, label }) => (
+            <NavLink key={to} to={to} end={to === "/"}
+              className={({ isActive }) => "bottom-nav-item" + (isActive ? " active" : "")}>
+              <div className="nav-icon-wrap"><Icon size={20} /></div>
+              <span>{label}</span>
+            </NavLink>
+          ))}
+        </nav>
       </div>
-      <nav className="bottom-nav">
-        {[
-          { to: "/", icon: LayoutDashboard, label: "Dashboard" },
-          { to: "/savings", icon: PiggyBank, label: "Savings" },
-          { to: "/loans", icon: CreditCard, label: "Loans" },
-          { to: "/expenses", icon: Receipt, label: "Expenses" },
-          { to: "/analytics", icon: BarChart3, label: "Analytics" },
-        ].map(({ to, icon: Icon, label }) => (
-          <NavLink
-            key={to}
-            to={to}
-            className={({ isActive }) =>
-              "bottom-nav-item" + (isActive ? " active" : "")
-            }
-          >
-            <Icon size={20} />
-            <span>{label}</span>
-          </NavLink>
-        ))}
-      </nav>
     </DataContext.Provider>
   );
 }
